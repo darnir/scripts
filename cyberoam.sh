@@ -18,23 +18,15 @@
 
 #TODO: Modularize, create functions and implement parameterized input.
 
-#Deprecated Code. Lying here to show how it was originally written
-#User Variables to be passed to the Cyberoam Server. These variables should be defined in ${HOME}/${FILE}
-#USER=Username
-#PASS=Password
-
-#Variables defining Server Location. These variables should be defined in ${HOME}/${FILE}
-#SERVER="172.16.0.30"
-#PORT="8090"
-#PAGE="httpclient.html"
-
 # Some Basic Variables that store location of important files. 
 LOGFILE=$(echo ${HOME})/.crlog
 OUTPUT=/tmp/.crout
 FILE=client.conf
-#TODO: Use --post-file option to send data
+# TODO: Use --post-file option to send data. This adds some security since the passwords will no longer be visible
+# through ps. However, they are still sent in plaintext and canbe intercepted by any packet sniffer.
 
 # Function Declarations for later use in code.
+
 # Action and Mode are two hidden fields in the Cyberoam Login page. The values in use here were pulled through packet sniffing and reading the headers. 
 login_c() {
     ACTION=Login
