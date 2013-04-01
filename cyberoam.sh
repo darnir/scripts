@@ -92,3 +92,21 @@ else
 fi
 
 exit $e
+
+login() {
+
+    ACTION=Login
+    MODE=191
+    #TODO: Make PORT and PAGE variables optional
+    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2>     /dev/null
+    RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
+    if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
+        then
+            echo "Logged In"
+    else
+        echo "Error in Logging In:"
+        echo $RESPONSE
+        rm ${OUTPUT}
+        e=1
+    fi
+}
