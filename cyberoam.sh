@@ -40,7 +40,25 @@ login_c() {
     ACTION=Login
     MODE=191
     #TODO: Make PORT and PAGE variables optional
-    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -    o ${LOGFILE} 2> /dev/null
+    wget --timeout=5 -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
+    #wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} 
+    RETCODE=$?
+    if [ "$RETCODE" -gt 0  ]
+    then
+        echo -n "Error: "
+        case $RETCODE in
+            1) echo "Something went wrong. Wget Failed.";;
+            2) echo "Parse error in Wget command. Please test check command options.";;
+            3) echo "File I/O Error in Wget. Please ensure that the script has R/W permissions in $HOME and /tmp";;
+            4) echo 'Network Failure. Could not connect to the Server';;
+            5) echo "SSL Verifification Failure. Why are you trying to use SSL anyways?";;
+            6) echo "Useraname/Password Authentication Failure. If you get this message, you managed to send authentication tokens separately apart from a POST Request. Please contact me with your patch!";;
+            7) echo "Unknown Protocol Error.";;
+            8) echo "Server returned an error.";;
+            *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
+        esac
+        exit $RETCODE
+    fi
     RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
     if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
     then
@@ -48,7 +66,7 @@ login_c() {
     else
         echo "Error in Logging In:"
         echo $RESPONSE
-        rm ${OUTPUT}
+        rm ${OUTPUT} 2> /dev/null
         e=1
     fi
 }
@@ -56,12 +74,10 @@ login_c() {
 logout_c() {
     ACTION=Logout
     MODE=193
-    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -    o ${LOGFILE} 2> /dev/null
+    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
     echo "Logged Out"
     rm ${OUTPUT}
 }
-
-
 
 #Assumes syntax of file is PERFECT. Does not accept comments either.
 #TODO: Convert sed statements to awk and read $3 
@@ -107,21 +123,3 @@ else
 fi
 
 exit $e
-
-login() {
-
-    ACTION=Login
-    MODE=191
-    #TODO: Make PORT and PAGE variables optional
-    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2>     /dev/null
-    RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
-    if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
-        then
-            echo "Logged In"
-    else
-        echo "Error in Logging In:"
-        echo $RESPONSE
-        rm ${OUTPUT}
-        e=1
-    fi
-}
