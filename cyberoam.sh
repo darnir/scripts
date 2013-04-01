@@ -18,6 +18,7 @@
 
 #TODO: Modularize, create functions and implement parameterized input.
 
+#Deprecated Code. Lying here to show how it was originally written
 #User Variables to be passed to the Cyberoam Server. These variables should be defined in ${HOME}/${FILE}
 #USER=Username
 #PASS=Password
@@ -27,10 +28,40 @@
 #PORT="8090"
 #PAGE="httpclient.html"
 
+# Some Basic Variables that store location of important files. 
 LOGFILE=$(echo ${HOME})/.crlog
 OUTPUT=/tmp/.crout
 FILE=client.conf
 #TODO: Use --post-file option to send data
+
+# Function Declarations for later use in code.
+# Action and Mode are two hidden fields in the Cyberoam Login page. The values in use here were pulled through packet sniffing and reading the headers. 
+login_c() {
+    ACTION=Login
+    MODE=191
+    #TODO: Make PORT and PAGE variables optional
+    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -    o ${LOGFILE} 2> /dev/null
+    RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
+    if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
+    then
+           echo "Logged In"
+    else
+        echo "Error in Logging In:"
+        echo $RESPONSE
+        rm ${OUTPUT}
+        e=1
+    fi
+}
+
+logout_c() {
+    ACTION=Logout
+    MODE=193
+    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -    o ${LOGFILE} 2> /dev/null
+    echo "Logged Out"
+    rm ${OUTPUT}
+}
+
+
 
 #Assumes syntax of file is PERFECT. Does not accept comments either.
 #TODO: Convert sed statements to awk and read $3 
@@ -69,26 +100,10 @@ fi
 
 if [ ! -f $OUTPUT ]
 then 
-    ACTION=Login
-    MODE=191
-#TODO: Make PORT and PAGE variables optional
-    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
-    RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
-    if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
-    then
-        echo "Logged In"
-    else
-	echo "Error in Logging In:"
-	echo $RESPONSE
-	rm ${OUTPUT}
-	e=1
-    fi
+    login_c
+
 else
-    ACTION=Logout
-    MODE=193
-    wget -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
-    echo "Logged Out"
-    rm ${OUTPUT}
+    logout_c
 fi
 
 exit $e
