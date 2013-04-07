@@ -63,9 +63,6 @@ error() {
         7) echo "Unknown Protocol Error.";;
         8) echo "Server returned an error.";;
         201) echo ${RESPONSE};;
-        202) echo -e "Configuration file does not exist.\n${HOME}/${FILE} Created with defaults. Please edit values and re-run script.";;
-        203) echo "Please enter your username and password in ${HOME}/${FILE} and re-run script.";;
-        204) echo "Please add your server configuration in ${HOME}/${FILE} and re-run script.";;
         205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
@@ -115,6 +112,7 @@ write_conf() {
 }
 
 read_conf() {
+    #Assumes syntax of file is PERFECT. Does not accept comments either.
     USERNAME=`cat ${HOME}/${FILE} | sed 's/USERNAME=/&\n/;s/.*\n//;s/PASS\*/\n&/;s/\n.*//' | head -1`
     PASS=`cat ${HOME}/${FILE} | sed 's/PASS=/&\n/;s/.*\n//;s/SERVER\*/\n&/;s/\n.*//' | head -2 | tail -1`
     SERVER=`cat ${HOME}/${FILE} | sed 's/SERVER=/&\n/;s/.*\n//;s/PORT\*/\n&/;s/\n.*//' | head -3 | tail -1`
@@ -122,13 +120,21 @@ read_conf() {
     PAGE=`cat ${HOME}/${FILE} | sed 's/PAGE=/&\n/;s/.*\n//;s/\*/\n&/;s/\n.*//' | tail -1`
 }
 
-#Assumes syntax of file is PERFECT. Does not accept comments either.
+###################### END OF FUNCTION DECLARATIONS ######################################################
 
 if [ ! -f ${HOME}/${FILE} ]
 then
+    echo -n "Username: "
+    read USERNAME
+    read -s -p "Password: " PASS
+    echo                               #read -p does not add a newline
+    echo -n "Server: "
+    read -e -i "172.16.0.0" SERVER
+    echo -n "Port: "
+    read -e -i "8090" PORT
+    echo -n "Page: "
+    read -e -i "httpclient.html" PAGE
     write_conf
-    RETCODE=202
-    error
 else
     read_conf
 fi
@@ -136,16 +142,6 @@ fi
 if [ ! $(which wget 2> /dev/null) ]
 then
     RETCODE=205
-    error
-fi
-
-if [ "$USERNAME" == "Username" -o "$PASS" == "Password" ]
-then
-    RETCODE=203
-    error
-elif [ "$SERVER" == "Server" -o "$PORT" == "Port" -o "$PAGE" == "Page" ]
-then 
-    RETCODE=204
     error
 fi
 
