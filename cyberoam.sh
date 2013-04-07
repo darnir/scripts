@@ -41,6 +41,14 @@ MODE=0
 RETCODE=0
 MESSAGE_LOGIN="You have successfully logged in"
 
+
+# Server config variables, defined with default values
+USERNAME=Username
+PASS=Password
+SERVER=Server
+PORT=Port
+PAGE=Page
+
 # Function Declarations for later use in code.
 
 error() {
@@ -55,7 +63,7 @@ error() {
         7) echo "Unknown Protocol Error.";;
         8) echo "Server returned an error.";;
         201) echo ${RESPONSE};;
-        202) echo "${HOME}/${FILE} Created with defaults. Please edit values and re-run script.";;
+        202) echo -e "Configuration file does not exist.\n${HOME}/${FILE} Created with defaults. Please edit values and re-run script.";;
         203) echo "Please enter your username and password in ${HOME}/${FILE} and re-run script.";;
         204) echo "Please add your server configuration in ${HOME}/${FILE} and re-run script.";;
         205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
@@ -98,23 +106,31 @@ logout_c() {
     rm ${OUTPUT} 2> /dev/null
 }
 
-#Assumes syntax of file is PERFECT. Does not accept comments either.
+write_conf() {
+    echo "USERNAME=${USERNAME}" > ${HOME}/${FILE}
+    echo "PASS=${PASS}" >> ${HOME}/${FILE}
+    echo "SERVER=${SERVER}" >> ${HOME}/${FILE}
+    echo "PORT=${PORT}" >> ${HOME}/${FILE}
+    echo "PAGE=${PAGE}" >> ${HOME}/${FILE}
+}
 
-if [ ! -f ${HOME}/${FILE} ]
-then
-    echo "USERNAME=Username" > ${HOME}/${FILE}
-    echo "PASS=Password" >> ${HOME}/${FILE}
-    echo "SERVER=Server" >> ${HOME}/${FILE}
-    echo "PORT=Port" >> ${HOME}/${FILE}
-    echo "PAGE=Page" >> ${HOME}/${FILE}
-    RETCODE=202
-    error
-else
+read_conf() {
     USERNAME=`cat ${HOME}/${FILE} | sed 's/USERNAME=/&\n/;s/.*\n//;s/PASS\*/\n&/;s/\n.*//' | head -1`
     PASS=`cat ${HOME}/${FILE} | sed 's/PASS=/&\n/;s/.*\n//;s/SERVER\*/\n&/;s/\n.*//' | head -2 | tail -1`
     SERVER=`cat ${HOME}/${FILE} | sed 's/SERVER=/&\n/;s/.*\n//;s/PORT\*/\n&/;s/\n.*//' | head -3 | tail -1`
     PORT=`cat ${HOME}/${FILE} | sed 's/PORT=/&\n/;s/.*\n//;s/PAGE\*/\n&/;s/\n.*//' | tail -2 | head -1`
     PAGE=`cat ${HOME}/${FILE} | sed 's/PAGE=/&\n/;s/.*\n//;s/\*/\n&/;s/\n.*//' | tail -1`
+}
+
+#Assumes syntax of file is PERFECT. Does not accept comments either.
+
+if [ ! -f ${HOME}/${FILE} ]
+then
+    write_conf
+    RETCODE=202
+    error
+else
+    read_conf
 fi
 
 if [ ! $(which wget 2> /dev/null) ]
