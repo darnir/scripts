@@ -58,6 +58,7 @@ error() {
         202) echo "${HOME}/${FILE} Created with defaults. Please edit values and re-run script.";;
         203) echo "Please enter your username and password in ${HOME}/${FILE} and re-run script.";;
         204) echo "Please add your server configuration in ${HOME}/${FILE} and re-run script.";;
+        205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
     rm ${OUTPUT} 2> /dev/null
@@ -114,6 +115,12 @@ else
     SERVER=`cat ${HOME}/${FILE} | sed 's/SERVER=/&\n/;s/.*\n//;s/PORT\*/\n&/;s/\n.*//' | head -3 | tail -1`
     PORT=`cat ${HOME}/${FILE} | sed 's/PORT=/&\n/;s/.*\n//;s/PAGE\*/\n&/;s/\n.*//' | tail -2 | head -1`
     PAGE=`cat ${HOME}/${FILE} | sed 's/PAGE=/&\n/;s/.*\n//;s/\*/\n&/;s/\n.*//' | tail -1`
+fi
+
+if [ ! $(which wget 2> /dev/null) ]
+then
+    RETCODE=205
+    error
 fi
 
 if [ "$USERNAME" == "Username" -o "$PASS" == "Password" ]
