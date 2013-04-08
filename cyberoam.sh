@@ -22,7 +22,6 @@
 
 # List of things todo on this script:
 
-# TODO: Modularize, create functions and implement parameterized input.
 # TODO: Use --post-file option to send data. This adds some security since the passwords will no longer be visible
 #       through ps. However, they are still sent in plaintext and canbe intercepted by any packet sniffer.
 # TODO: Make PORT and PAGE variables optional.
@@ -103,6 +102,19 @@ logout_c() {
     rm ${OUTPUT} 2> /dev/null
 }
 
+input_conf() {
+    echo -n "Username: "
+    read USERNAME
+    read -s -p "Password: " PASS
+    echo                               #read -p does not add a newline
+    echo -n "Server: "
+    read -e -i "172.16.0.0" SERVER
+    echo -n "Port: "
+    read -e -i "8090" PORT
+    echo -n "Page: "
+    read -e -i "httpclient.html" PAGE
+}
+
 write_conf() {
     echo "USERNAME=${USERNAME}" > ${HOME}/${FILE}
     echo "PASS=${PASS}" >> ${HOME}/${FILE}
@@ -124,16 +136,7 @@ read_conf() {
 
 if [ ! -f ${HOME}/${FILE} ]
 then
-    echo -n "Username: "
-    read USERNAME
-    read -s -p "Password: " PASS
-    echo                               #read -p does not add a newline
-    echo -n "Server: "
-    read -e -i "172.16.0.0" SERVER
-    echo -n "Port: "
-    read -e -i "8090" PORT
-    echo -n "Page: "
-    read -e -i "httpclient.html" PAGE
+    input_conf
     write_conf
 else
     read_conf
