@@ -39,6 +39,8 @@ ACTION=NULL
 MODE=0
 RETCODE=0
 MESSAGE_LOGIN="You have successfully logged in"
+TEMP=1
+PARAM=inputParameters
 
 
 # Server config variables, defined with default values
@@ -63,6 +65,7 @@ error() {
         8) echo "Server returned an error.";;
         201) echo ${RESPONSE};;
         205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
+        206) echo "Unknown parameter input.";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
     rm ${OUTPUT} 2> /dev/null
@@ -108,7 +111,7 @@ input_conf() {
     read -s -p "Password: " PASS
     echo                               #read -p does not add a newline
     echo -n "Server: "
-    read -e -i "172.16.0.0" SERVER
+    read -e -i "172.16.0.30" SERVER
     echo -n "Port: "
     read -e -i "8090" PORT
     echo -n "Page: "
@@ -134,7 +137,19 @@ read_conf() {
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
 
-if [ ! -f ${HOME}/${FILE} ]
+while getopts "1" PARAM
+do
+    case $PARAM in
+        1) TEMP=0;;
+        *) RETCODE=206
+           error;;
+    esac
+done
+
+if [ "$TEMP" -eq 0 ]
+then
+    input_conf
+elif [ ! -f ${HOME}/${FILE} ]
 then
     input_conf
     write_conf
