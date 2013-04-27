@@ -41,7 +41,7 @@ RETCODE=0
 MESSAGE_LOGIN="You have successfully logged in"
 TEMP=1
 PARAM=inputParameters
-
+EXPLICIT=0
 
 # Server config variables, defined with default values
 USERNAME=Username
@@ -137,10 +137,12 @@ read_conf() {
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
 
-while getopts "1" PARAM
+while getopts "1ul" PARAM
 do
     case $PARAM in
         1) TEMP=0;;
+        u) EXPLICIT=u;;
+        l) EXPLICIT=l;;
         *) RETCODE=206
            error;;
     esac
@@ -163,12 +165,21 @@ then
     error
 fi
 
-if [ ! -f $OUTPUT ]
-then 
-    login_c
-
+if [ $EXPLICIT -ne 0 ]
+then
+    case $EXPLICIT in
+        u) login_c;;
+        l) logout_c;;
+        *) RETCODE=206
+           error;;
+    esac
 else
-    logout_c
+    if [ ! -f $OUTPUT ]
+    then
+        login_c
+    else
+        logout_c
+    fi
 fi
 
 exit 0
