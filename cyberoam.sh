@@ -41,7 +41,7 @@ RETCODE=0
 MESSAGE_LOGIN="You have successfully logged in"
 TEMP=1
 PARAM=inputParameters
-EXPLICIT=0
+EXPLICIT=NULL
 
 # Server config variables, defined with default values
 USERNAME=Username
@@ -165,7 +165,7 @@ then
     error
 fi
 
-if [ $EXPLICIT -ne 0 ]
+if [ "$EXPLICIT" != NULL ]
 then
     case $EXPLICIT in
         u) login_c;;
