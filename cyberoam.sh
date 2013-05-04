@@ -60,7 +60,7 @@ error() {
         3) echo "File I/O Error in Wget. Please ensure that the script has R/W permissions in $HOME and /tmp";;
         4) echo 'Network Failure. Could not connect to the Server';;
         5) echo "SSL Verifification Failure. Why are you trying to use SSL anyways?";;
-        6) echo "Useraname/Password Authentication Failure. If you get this message, you managed to send authentication tokens separately apart from a POST Request. Please contact me with your patch!";;
+        6) echo "Useraname/Password Authentication Failure. If you get this message, you managed to send authentication tokens separately apart from     a POST Request. Please contact me with your patch!";;
         7) echo "Unknown Protocol Error.";;
         8) echo "Server returned an error.";;
         201) echo ${RESPONSE};;
@@ -137,14 +137,12 @@ read_conf() {
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
 
-while getopts "1uld" PARAM
+while getopts "1ul" PARAM
 do
     case $PARAM in
         1) TEMP=0;;
         u) EXPLICIT=u;;
         l) EXPLICIT=l;;
-        d) OUTPUT="/dev/stdout"
-           LOGFILE="/dev/stdout";;
         *) RETCODE=206
            error;;
     esac
