@@ -29,7 +29,7 @@
 # TODO: Add test to check $PORT in $FILE is Numeric ONLY.
 
 
-# Some Basic Variables that store location of important files. 
+# Some Basic Variables that store location of important files.
 LOGFILE=$(echo ${HOME})/.crlog
 OUTPUT=/tmp/.crout
 FILE=client.conf
@@ -60,7 +60,7 @@ error() {
         3) echo "File I/O Error in Wget. Please ensure that the script has R/W permissions in $HOME and /tmp";;
         4) echo 'Network Failure. Could not connect to the Server';;
         5) echo "SSL Verifification Failure. Why are you trying to use SSL anyways?";;
-        6) echo "Useraname/Password Authentication Failure. If you get this message, you managed to send authentication tokens separately apart from     a POST Request. Please contact me with your patch!";;
+        6) echo "Useraname/Password Authentication Failure. If you get this message, you managed to send authentication tokens separately apart from a POST Request. Please contact me with your patch!";;
         7) echo "Unknown Protocol Error.";;
         8) echo "Server returned an error.";;
         201) echo ${RESPONSE};;
@@ -72,7 +72,7 @@ error() {
     exit $RETCODE
 }
 
-# Action and Mode are two hidden fields in the Cyberoam Login page. The values in use here were pulled through packet sniffing and reading the headers. 
+# Action and Mode are two hidden fields in the Cyberoam Login page. The values in use here were pulled through packet sniffing and reading the headers.
 login_c() {
     ACTION=Login
     MODE=191
