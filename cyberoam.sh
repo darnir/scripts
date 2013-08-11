@@ -38,7 +38,7 @@ FILE=client.conf
 ACTION=NULL
 MODE=0
 RETCODE=0
-MESSAGE_LOGIN="<![CDATA[You have successfully logged in]]>"
+MESSAGE_LOGIN="You have successfully logged in"
 TEMP=1
 PARAM=inputParameters
 EXPLICIT=NULL
@@ -82,7 +82,7 @@ login_c() {
     then
         error
     fi
-    RESPONSE=`cat ${OUTPUT} | sed 's/<message>/&\n/;s/.*\n//;s/<\/message>/\n&/;s/\n.*//'`
+    RESPONSE=`cat ${OUTPUT} | sed 's/<message><![CDATA[/&\n/;s/.*\n//;s/]]><\/message>/\n&/;s/\n.*//'`
     if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
     then
            echo "Logged In"
