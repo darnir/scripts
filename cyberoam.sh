@@ -68,7 +68,7 @@ error() {
         206) echo "Unknown parameter input.";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
-    rm ${OUTPUT} 2> /dev/null
+    #rm ${OUTPUT} 2> /dev/null
     exit $RETCODE
 }
 
@@ -82,7 +82,7 @@ login_c() {
     then
         error
     fi
-    RESPONSE=`cat ${OUTPUT} | sed 's/<message><![CDATA[/&\n/;s/.*\n//;s/]]><\/message>/\n&/;s/\n.*//'`
+    RESPONSE=`cat ${OUTPUT} | sed 's/<message><!\[CDATA\[/&\n/;s/.*\n//;s/]]><\/message>/\n&/;s/\n.*//'`
     if [ "$RESPONSE" == "${MESSAGE_LOGIN}" ]
     then
            echo "Logged In"
