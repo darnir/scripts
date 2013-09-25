@@ -25,7 +25,6 @@
 # TODO: Use --post-file option to send data. This adds some security since the passwords will no longer be visible
 #       through ps. However, they are still sent in plaintext and canbe intercepted by any packet sniffer.
 # TODO: Make PORT and PAGE variables optional.
-# TODO: Convert sed statements to awk and read $3 when reading $FILE.
 # TODO: Add test to check $PORT in $FILE is Numeric ONLY.
 
 
@@ -119,20 +118,20 @@ input_conf() {
 }
 
 write_conf() {
-    echo "USERNAME=${USERNAME}" > ${HOME}/${FILE}
-    echo "PASS=${PASS}" >> ${HOME}/${FILE}
-    echo "SERVER=${SERVER}" >> ${HOME}/${FILE}
-    echo "PORT=${PORT}" >> ${HOME}/${FILE}
-    echo "PAGE=${PAGE}" >> ${HOME}/${FILE}
+    echo "USERNAME = ${USERNAME}" > ${HOME}/${FILE}
+    echo "PASS = ${PASS}" >> ${HOME}/${FILE}
+    echo "SERVER = ${SERVER}" >> ${HOME}/${FILE}
+    echo "PORT = ${PORT}" >> ${HOME}/${FILE}
+    echo "PAGE = ${PAGE}" >> ${HOME}/${FILE}
 }
 
 read_conf() {
-    #Assumes syntax of file is PERFECT. Does not accept comments either.
-    USERNAME=`cat ${HOME}/${FILE} | sed 's/USERNAME=/&\n/;s/.*\n//;s/PASS\*/\n&/;s/\n.*//' | head -1`
-    PASS=`cat ${HOME}/${FILE} | sed 's/PASS=/&\n/;s/.*\n//;s/SERVER\*/\n&/;s/\n.*//' | head -2 | tail -1`
-    SERVER=`cat ${HOME}/${FILE} | sed 's/SERVER=/&\n/;s/.*\n//;s/PORT\*/\n&/;s/\n.*//' | head -3 | tail -1`
-    PORT=`cat ${HOME}/${FILE} | sed 's/PORT=/&\n/;s/.*\n//;s/PAGE\*/\n&/;s/\n.*//' | tail -2 | head -1`
-    PAGE=`cat ${HOME}/${FILE} | sed 's/PAGE=/&\n/;s/.*\n//;s/\*/\n&/;s/\n.*//' | tail -1`
+    USERNAME=$(grep "USERNAME" ${HOME}/${FILE} | awk '{print $3}')
+    PASS=$(grep "PASS" ${HOME}/${FILE} | awk '{print $3}')
+    SERVER=$(grep "SERVER" ${HOME}/${FILE} | awk '{print $3}')
+    PORT=$(grep "PORT" ${HOME}/${FILE} | awk '{print $3}')
+    PAGE=$(grep "PAGE" ${HOME}/${FILE} | awk '{print $3}')
+
 }
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
