@@ -75,7 +75,7 @@ error() {
 login_c() {
     ACTION=Login
     MODE=191
-    wget --timeout=5 --tries=2 -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
+    wget --timeout=5 --tries=2 -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" "http://${SERVER}:${PORT}/${PAGE}" -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
     RETCODE=$?
     if [ "$RETCODE" -gt 0 ]
     then
@@ -94,7 +94,7 @@ login_c() {
 logout_c() {
     ACTION=Logout
     MODE=193
-    wget --timeout=5 --tries=2 -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" ${SERVER}:${PORT}/${PAGE} -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
+    wget --timeout=5 --tries=2 -d --post-data="username=${USERNAME}&password=${PASS}&mode=${MODE}&btnSubmit=${ACTION}" "http://${SERVER}:${PORT}/${PAGE}" -O ${OUTPUT} -o ${LOGFILE} 2> /dev/null
     RETCODE=$?
     if [ "$RETCODE" -gt 0 ]
     then
