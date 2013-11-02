@@ -65,6 +65,7 @@ error() {
         201) echo ${RESPONSE};;
         205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
         206) echo "Unknown parameter input.";;
+        207) echo "The configuration file could not be read correctly. If you recently updated the script, please generate a new conf file by deleting ~/client.conf";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
     #rm ${OUTPUT} 2> /dev/null
@@ -131,7 +132,11 @@ read_conf() {
     SERVER=$(grep "SERVER" ${HOME}/${FILE} | awk '{print $3}')
     PORT=$(grep "PORT" ${HOME}/${FILE} | awk '{print $3}')
     PAGE=$(grep "PAGE" ${HOME}/${FILE} | awk '{print $3}')
-
+    if [ -z "$SERVER" ]
+    then
+        RETCODE=207
+        error
+    fi
 }
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
