@@ -68,7 +68,7 @@ error() {
         207) echo "The configuration file could not be read correctly. If you recently updated the script, please generate a new conf file by deleting ~/client.conf";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
-    #rm ${OUTPUT} 2> /dev/null
+    rm ${OUTPUT} 2> /dev/null
     exit $RETCODE
 }
 
