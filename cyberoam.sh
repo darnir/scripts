@@ -29,7 +29,7 @@
 
 
 # Some Basic Variables that store location of important files.
-LOGFILE=$(echo ${HOME})/.crlog
+LOGFILE=${HOME}/.crlog
 OUTPUT=/tmp/.crout
 FILE=client.conf
 
