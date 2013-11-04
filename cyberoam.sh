@@ -31,8 +31,7 @@
 # Some Basic Variables that store location of important files.
 LOGFILE=${HOME}/.crlog
 OUTPUT=/tmp/.crout
-FILE=client.conf
-
+CONFILE=${HOME}/client.conf
 # Other Variables in use in this script. List all here and initialize for ease of maintenance.
 ACTION=NULL
 MODE=0
@@ -65,7 +64,7 @@ error() {
         201) echo ${RESPONSE};;
         205) echo "Could not locate Wget on your system. Please ensure that you have Wget installed.";;
         206) echo "Unknown parameter input.";;
-        207) echo "The configuration file could not be read correctly. If you recently updated the script, please generate a new conf file by deleting ~/client.conf";;
+        207) echo "The configuration file could not be read correctly. If you recently updated the script, please generate a new conf file by deleting ${CONFILE}";;
         *) echo "Unknown error. Please send your $LOGFILE to <darnir@gmail.com> for analysis";;
     esac
     rm ${OUTPUT} 2> /dev/null
@@ -119,19 +118,19 @@ input_conf() {
 }
 
 write_conf() {
-    echo "USERNAME = ${USERNAME}" > ${HOME}/${FILE}
-    echo "PASS = ${PASS}" >> ${HOME}/${FILE}
-    echo "SERVER = ${SERVER}" >> ${HOME}/${FILE}
-    echo "PORT = ${PORT}" >> ${HOME}/${FILE}
-    echo "PAGE = ${PAGE}" >> ${HOME}/${FILE}
+    echo "USERNAME = ${USERNAME}" > ${CONFILE}
+    echo "PASS = ${PASS}" >> ${CONFILE}
+    echo "SERVER = ${SERVER}" >> ${CONFILE}
+    echo "PORT = ${PORT}" >> ${CONFILE}
+    echo "PAGE = ${PAGE}" >> ${CONFILE}
 }
 
 read_conf() {
-    USERNAME=$(grep "USERNAME" ${HOME}/${FILE} | awk '{print $3}')
-    PASS=$(grep "PASS" ${HOME}/${FILE} | awk '{print $3}')
-    SERVER=$(grep "SERVER" ${HOME}/${FILE} | awk '{print $3}')
-    PORT=$(grep "PORT" ${HOME}/${FILE} | awk '{print $3}')
-    PAGE=$(grep "PAGE" ${HOME}/${FILE} | awk '{print $3}')
+    USERNAME=$(grep "USERNAME" ${CONFILE} | awk '{print $3}')
+    PASS=$(grep "PASS" ${CONFILE} | awk '{print $3}')
+    SERVER=$(grep "SERVER" ${CONFILE} | awk '{print $3}')
+    PORT=$(grep "PORT" ${CONFILE} | awk '{print $3}')
+    PAGE=$(grep "PAGE" ${CONFILE} | awk '{print $3}')
     if [ -z "$SERVER" ]
     then
         RETCODE=207
@@ -141,12 +140,13 @@ read_conf() {
 
 ###################### END OF FUNCTION DECLARATIONS ######################################################
 
-while getopts "1ul" PARAM
+while getopts "1ulc:" PARAM
 do
     case $PARAM in
         1) TEMP=0;;
         u) EXPLICIT=u;;
         l) EXPLICIT=l;;
+        c) CONFILE=${OPTARG};;
         *) RETCODE=206
            error;;
     esac
@@ -155,7 +155,7 @@ done
 if [ "$TEMP" -eq 0 ]
 then
     input_conf
-elif [ ! -f ${HOME}/${FILE} ]
+elif [ ! -f ${CONFILE} ]
 then
     input_conf
     write_conf
