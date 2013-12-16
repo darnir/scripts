@@ -16,6 +16,8 @@
 # The author will however entertain requests for a more liberal approach
 # on a case-by-case basis. Please email the author at: Darshit Shah <darnir@gmail.com>
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/darnir/scripts/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 This repository contains various small scripts that I have written to automate my day-to-day activities.
 Each script is maintained in its own branch for ease of maintenance.
 
