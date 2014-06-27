@@ -20,7 +20,3 @@ Contact
 =======
 For any changes, please fork the repository and send a pull request.
 For anything else, please contact me on my mail id: Darshit Shah <darnir@gmail.com>
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/darnir/scripts/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
