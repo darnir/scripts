@@ -53,16 +53,17 @@ for repo in "${OTHER_DATABASES[@]}"; do
 done
 
 pushd "$TMPDIR" &> /dev/null
-wget2_noinstall --progress=bar "${DB_LIST_URL[@]}"
+wget2 --progress=bar "${DB_LIST_URL[@]}"
 popd &> /dev/null
 
 mv "$TMPDIR/"* $DB_DIR/
 rm -r "$TMPDIR"
 
 pushd "$CACHE_DIR" &> /dev/null
-_UPDATES=$(pacman -Sup | head -n-1 | tr '\n' ' ')
+_UPDATES=$(pacman -Sup | tail -n+2 | tr '\n' ' ')
+echo "$_UPDATES"
 if [[ ! -z $_UPDATES ]]; then
-	wget2_noinstall --progress=bar  && pacman -Su
+	wget2 --progress=bar $_UPDATES && pacman -Su
 else
 	echo "No Updates found"
 fi
