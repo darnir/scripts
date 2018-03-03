@@ -16,13 +16,16 @@ set -o pipefail
 set -u
 # set -x
 
-# This script *MUST* be run as root.
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit
-fi
+# # This script *MUST* be run as root.
+# if [ "$EUID" -ne 0 ]
+#   then echo "Please run as root"
+#   exit
+# fi
 
 ## Configurations
+
+WGET2_PREFIX="/home/thedoctor/Programming/wget2/src/"
+#WGET2_PREFIX="/usr/bin/"
 
 # TODO: Source these from pacman.conf or use alpm to provide this info
 
@@ -34,8 +37,9 @@ DB_DIR="/var/lib/pacman/sync"
 TMPDIR="$(mktemp -d)"
 CACHE_DIR="/var/cache/pacman/pkg"
 
-CORE_DATABASES=( testing core extra community-testing community )
-OTHER_DATABASES=( http://bohoomil.com/repo/${arch}/infinality-bundle.db http://bohoomil.com/repo/fonts/infinality-bundle-fonts.db)
+CORE_DATABASES=( core extra community multilib )
+# TESTING_DATABASES=( testing community-testing multilib-testing )
+# OTHER_DATABASES=( http://bohoomil.com/repo/${arch}/infinality-bundle.db{,.sig} http://bohoomil.com/repo/fonts/infinality-bundle-fonts.db{,.sig} )
 
 # Get the top server from the mirrorlist
 # TODO: Extend script to allow for server failures
@@ -48,22 +52,31 @@ for repo in "${CORE_DATABASES[@]}"; do
 	DB_LIST_URL+=("${R_URL}/${repo}.db")
 done
 
+for repo in "${TESTING_DATABASES[@]}"; do
+	R_URL=$(eval echo "$SERVER")
+	DB_LIST_URL+=("${R_URL}/${repo}.db")
+done
+
 for repo in "${OTHER_DATABASES[@]}"; do
 	DB_LIST_URL+=("$repo")
 done
 
 pushd "$TMPDIR" &> /dev/null
-wget2 --progress=bar "${DB_LIST_URL[@]}"
+cp -p $DB_DIR/* .
+# echo "${DB_LIST_URL[@]}"
+${WGET2_PREFIX}wget2 -N --progress=bar "${DB_LIST_URL[@]}"
+# ${WGET2_PREFIX}wget2 -d --max-threads=2 "${DB_LIST_URL[@]}"
 popd &> /dev/null
+# set +x
 
-mv "$TMPDIR/"* $DB_DIR/
+sudo cp -p "$TMPDIR/"* $DB_DIR/
 rm -r "$TMPDIR"
 
 pushd "$CACHE_DIR" &> /dev/null
 _UPDATES=$(pacman -Sup | tail -n+2 | tr '\n' ' ')
-echo "$_UPDATES"
+# echo "$_UPDATES"
 if [[ ! -z $_UPDATES ]]; then
-	wget2 --progress=bar $_UPDATES && pacman -Su
+	sudo ${WGET2_PREFIX}wget2 -N --progress=bar $_UPDATES && sudo pacman -Su
 else
 	echo "No Updates found"
 fi
